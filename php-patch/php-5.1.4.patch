@@ -1,0 +1,110 @@
+diff -r php-5.1.4.patched/sapi/cgi/cgi_main.c php-5.1.4/sapi/cgi/cgi_main.c
+84d83
+< #define MAX_BLOCK_SIZE 8192
+695d693
+< 		struct stat st;
+701,766d698
+< 		fprintf(stderr,"==>Request Receved 'PATH_TRANSLATED' set:%s\n", script_path_translated);
+< 
+< #if PHP_FASTCGI
+< 		/* if PATH_TRANSLATED is a directory, 
+< 		 * try to search index file...
+< 		 */
+< 		if (script_path_translated && stat(script_path_translated, &st)==0 && S_ISDIR(st.st_mode))
+< 		{
+< 		  char szIndexList[]="index.php index.html index.php3 index.php4 index.php5";
+< 		  char*szToken=NULL,*szSaveToken;
+< 		  
+< 		  int nPathTransLen = strlen(env_path_translated);
+< 		  int i=0;
+< 		  fprintf(stderr,"script_path_translated is a directory:%s\n", script_path_translated);
+< 
+< 		  if (env_path_translated[nPathTransLen-1]=='/')
+< 		  {
+<                     szToken=php_strtok_r(szIndexList," ",&szSaveToken);
+<                     while (szToken!=NULL)
+< 		    {
+< 		      int nPathInfoLen = strlen(env_path_info);
+< 		      int nIndexLen = strlen(szToken);
+< 		      char *szBuffPathTrans = (char *) emalloc(nPathTransLen+nIndexLen+3);
+< 		      char *szBuffPathInfo = (char *) emalloc(nPathInfoLen+nIndexLen+3);
+< 		      /* PATH_TRANSLATED = PATH_TRANSLATED + index file */
+< 		      *szBuffPathTrans = '\0';
+< 		      strncat(szBuffPathTrans, script_path_translated, nPathTransLen);
+< 		      strcat(szBuffPathTrans, szToken);
+< 	              fprintf(stderr,"szBuffPathTrans+index:%s\n", szBuffPathTrans);
+< 
+< 		      if (stat(szBuffPathTrans,&st)==0 && S_ISREG(st.st_mode))
+< 		      {
+< 			 env_path_translated = _sapi_cgibin_putenv("PATH_TRANSLATED", szBuffPathTrans TSRMLS_CC);
+< 			 script_path_translated = env_path_translated;
+< 
+< 			 *szBuffPathInfo = '\0';
+< 			 strncat(szBuffPathInfo, env_path_info, nPathInfoLen);
+< 			 strcat(szBuffPathInfo, szToken);
+< 			 env_path_info = _sapi_cgibin_putenv("PATH_INFO", szBuffPathInfo TSRMLS_CC);
+< 			 env_script_name = _sapi_cgibin_putenv("SCRIPT_NAME", szBuffPathInfo TSRMLS_CC);
+< 			 efree(szBuffPathInfo);
+< 			 efree(szBuffPathTrans);
+< 			 break;
+< 		      }
+< 		      i++;
+< 		      efree(szBuffPathInfo);
+< 		      efree(szBuffPathTrans);
+<                       szToken=php_strtok_r(NULL," ",&szSaveToken);
+< 		    }
+< 		  }
+< 		  else
+< 		  {
+< 		    fprintf(stderr,"script_path_translated is a directory but no slash a end:%s\n", script_path_translated);
+< 		    fprintf(stderr,"    redirect to PATH_INFO:%s/\n", env_path_info);
+< 		    php_printf("Location:%s/\r\n",env_path_info);
+< 		    _sapi_cgibin_putenv("PATH_INFO", NULL TSRMLS_CC);
+< 		    _sapi_cgibin_putenv("PATH_TRANSLATED", NULL TSRMLS_CC);
+< 		    _sapi_cgibin_putenv("SCRIPT_NAME", NULL TSRMLS_CC);
+< 		    _sapi_cgibin_putenv("SCRIPT_FILENAME", NULL TSRMLS_CC);
+< 		    SG(sapi_headers).http_response_code = 302;
+< 		    return;
+< 		  }
+< 		}
+< 		
+< #endif
+< 
+767a700
+> 		struct stat st;
+1028c961
+< 	int retval = SUCCESS;
+---
+> 	int retval = FAILURE;
+1639d1571
+< #ifndef PHP_FASTCGI
+1641c1573
+< #else
+---
+> #if PHP_FASTCGI
+1676,1696c1608
+< 			 {
+< #if PHP_FASTCGI
+< 			        char *szExt=strrchr(file_handle.filename,'.');
+< 				/* send directly the file if extention are different than .php? */
+< 				if (!((strncmp(szExt,".php",4)==0)&&strlen(szExt)<=5))
+< 				{
+< 				    int nbchar;
+< 				    char szBuff[MAX_BLOCK_SIZE];
+< 				    PHPWRITE_H("Content-type: text/html\r\n",sizeof("Content-type: text/html\r\n"));
+< 				    PHPWRITE_H("\r\n",2);
+< 				    while(!feof(file_handle.handle.fp))
+< 				    {
+< 				      nbchar=fread(szBuff,1,MAX_BLOCK_SIZE,file_handle.handle.fp);
+< 				      if ((nbchar!=MAX_BLOCK_SIZE)&&(!feof(file_handle.handle.fp))) {perror("Read Error!\n");return -1;}
+< 				      PHPWRITE(szBuff,nbchar);
+< 				    }
+< 				    fclose(file_handle.handle.fp);
+< 				}
+< 				else
+< #endif
+< 				    php_execute_script(&file_handle TSRMLS_CC);
+---
+> 				php_execute_script(&file_handle TSRMLS_CC);
+1698d1609
+< 			 }
