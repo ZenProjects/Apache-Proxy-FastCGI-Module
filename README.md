@@ -1,4 +1,4 @@
-mod_proxy_fcgi
+Apache Proxy FastCGI Module
 ==============
 
 "mod_proxy_fcgi" is an Apache v2.0 proxy sheme module that implement "fcgi:" scheme to handle reverse proxy protocole FastCGI.
