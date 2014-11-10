@@ -3,7 +3,7 @@ Apache Proxy FastCGI Module
 
 "mod_proxy_fcgi" is an Apache v2.0 proxy sheme module that implement "fcgi:" scheme to handle reverse proxy protocole FastCGI.
 
-It complete rewrite of the old mod_fastcgi module developt by OpenMarket, based on FastCGI and CGI specification.
+It's complete rewrite of the old mod_fastcgi module developt by OpenMarket, based on FastCGI and CGI specification.
 
 My goal is to implement a suitable implementation of FastCGI (who work correctly with PHP!) with fully open source licence (have maked the module with Apache 2.0 Licence).
 
