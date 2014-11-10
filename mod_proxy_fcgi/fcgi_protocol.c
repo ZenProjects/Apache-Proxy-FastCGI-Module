@@ -18,7 +18,7 @@
 #include "http_protocol.h"
 #include "ap_config.h"
 #include "util_script.h"
-#include "arch/unix/apr_arch_networkio.h"
+//#include "arch/unix/apr_arch_networkio.h"
 #include "apr_errno.h"
 
 #include "mod_proxy.h"
@@ -224,7 +224,7 @@ static apr_status_t fcgi_filter_recv(apr_pool_t * p, ap_filter_t *ptrInputFilter
       return status;
     }
 
-    APR_BRIGADE_FOREACH(ptrLocalBucket,ptrBucketBrigade)
+    for(ptrLocalBucket = APR_BRIGADE_FIRST(ptrBucketBrigade); ptrLocalBucket != APR_BRIGADE_SENTINEL(ptrBucketBrigade) ; ptrLocalBucket = APR_BUCKET_NEXT(ptrLocalBucket))
     {
       /* end of stream ? */
       if (APR_BUCKET_IS_EOS(ptrLocalBucket)) 
@@ -252,7 +252,7 @@ static apr_status_t fcgi_filter_recv(apr_pool_t * p, ap_filter_t *ptrInputFilter
       }
       ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ptrServer, "proxy: FCGI: fcgi_filter_recv: readed bucket...");
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ptrServer, "proxy: FCGI: Readed data from brigade... nDataReadFromBrigade:%u nb Nb Bucket readed:%u nBufferLen:%u",nDataReadFromBrigade,nBucketNb,nBufferLen);
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ptrServer, "proxy: FCGI: Readed data from brigade... nDataReadFromBrigade: %ld nb Nb Bucket readed:%u nBufferLen:%u",nDataReadFromBrigade,nBucketNb,nBufferLen);
 
     apr_brigade_destroy(ptrBucketBrigade);
 
@@ -337,7 +337,7 @@ static apr_status_t fcgi_send_params_record(apr_pool_t * p, request_rec *r, u_in
      ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, "proxy: FCGI: Sending Params Record to backend server Error... id:%u apr_status:%u",nRequestId,status);
      return HTTP_INTERNAL_SERVER_ERROR;
     }
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: FCGI_PARAMS record sended of %u bytes id:%u",nLen,nRequestId);
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: FCGI_PARAMS record sended of %ld bytes id:%u",nLen,nRequestId);
 
 
     /* build and send  VOID FCGI_PARAMS record */
@@ -380,7 +380,7 @@ static apr_status_t fcgi_send_stdin_record(apr_pool_t * p, request_rec *r, u_int
 	{
 	  status=APR_SUCCESS;
 	  seen_eos=1;
-	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: client End of stream reach... id:%u size:%u",nRequestId,nDataLen);
+	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: client End of stream reach... id:%u size:%ld",nRequestId,nDataLen);
 	  if (nDataLen==0) break;
 	}
 
@@ -394,7 +394,7 @@ static apr_status_t fcgi_send_stdin_record(apr_pool_t * p, request_rec *r, u_int
             
 	if (nDataLen>0) 
 	{
-	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: Have readed data from input client stream ... id:%u size:%u",nRequestId,nDataLen);
+	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: Have readed data from input client stream ... id:%u size:%ld",nRequestId,nDataLen);
 
 	  /* build "FCGI_STDIN" record */
 	  /* set header and return the real len */
@@ -407,12 +407,12 @@ static apr_status_t fcgi_send_stdin_record(apr_pool_t * p, request_rec *r, u_int
 	    ap_log_error(APLOG_MARK, APLOG_ERR, 0, r->server, "proxy: FCGI: Sending STDIN Record to backend server Error... id:%u apr_status:%u",nRequestId,status);
 	    child_stopped_reading = 1;
 	  }
-	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: FCGI_STDIN Record %u bytes Sended to backend ... id:%u",nDataLen,nRequestId);
+	  ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: FCGI_STDIN Record %ld bytes Sended to backend ... id:%u",nDataLen,nRequestId);
 	}
     } 
     if (status!=APR_SUCCESS&&child_stopped_reading==1) return HTTP_INTERNAL_SERVER_ERROR;
 
-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: %u bytes FCGI_STDIN Record sended to backend ... id:%u",nTotalDataLen,nRequestId);
+    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: %ld bytes FCGI_STDIN Record sended to backend ... id:%u",nTotalDataLen,nRequestId);
     ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: Sending void FCGI_STDIN Record to backend ... id:%u",nRequestId);
     /* build viod "FCGI_STDIN" record */
     FCGI_Record_HeaderSetAllField((FCGI_Header*)ptrRecordBuffer, FCGI_VERSION_1, FCGI_STDIN, nRequestId, 0, 0);
@@ -630,7 +630,7 @@ static apr_status_t fcgi_stdout_cgi_header(apr_pool_t * p, request_rec *r, u_int
    else
      nLen=*nContentLength;
 
-   ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: parse CGI Header: Header receved %u bytes ... id:%u",nLen,nRequestId);
+   ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: parse CGI Header: Header receved %ld bytes ... id:%u",nLen,nRequestId);
    if (*nFlagCgiHeader==1)
    {
      /* scan cgi header and set request header out */
@@ -752,7 +752,7 @@ static apr_status_t fcgi_recev_stdout_stderr_record(apr_pool_t * p, request_rec 
 	    /* inc total receved data */
 	    nTotalRecevedData+=nRecvLen;
 
-	    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: Readed data from brigade... id:%u nRecvLen:%u nBufferLen:%u",nRequestId,nRecvLen,nBufferLen);
+	    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, r->server, "proxy: FCGI: Readed data from brigade... id:%u nRecvLen:%ld nBufferLen:%u",nRequestId,nRecvLen,nBufferLen);
 
 	    if (nBufferLen<FCGI_HEADER_LEN&&seen_eos)
 	    {

@@ -5,8 +5,8 @@
 # and "makepp" to compile.
 # and "makepp install" to install. 
 MY_MODULE_NAME=proxy_fcgi
-MY_APXS=/usr/sbin/apxs2
-MY_CFLAGS=-I/usr/include/apache2
+MY_APXS=/usr/sbin/apxs
+MY_CFLAGS=-I/usr/include
 MY_LDFLAGS=
 MY_TARGET=mod_$(MY_MODULE_NAME).la
 MY_SOURCE=$(MY_TARGET:.la=.c) fcgi_record.c fcgi_protocol.c

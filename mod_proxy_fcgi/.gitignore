@@ -1,0 +1,6 @@
+.libs/*
+.makepp/*
+*.o
+*.lo
+*.la
+*.slo

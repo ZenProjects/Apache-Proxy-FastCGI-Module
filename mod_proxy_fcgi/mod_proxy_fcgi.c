@@ -83,7 +83,7 @@ static int proxy_fcgi_canon(request_rec *r, char *szUrl)
         szSearch = r->args;
 
     /* process szPath */
-    szPath = ap_proxy_canonenc(r->pool, szUrl, strlen(szUrl), enc_path, r->proxyreq);
+    szPath = ap_proxy_canonenc(r->pool, szUrl, strlen(szUrl), enc_path, 0, r->proxyreq);
     if (szPath == NULL)
         return HTTP_BAD_REQUEST;
 
@@ -211,7 +211,7 @@ static apr_status_t proxy_fcgi_get_backend_connection(apr_pool_t *p,
 	    apr_socket_timeout_get(ptrBackend->sock, &current_timeout);
 	    /* set no timeout */
 	    apr_socket_timeout_set(ptrBackend->sock, 0);
-	    socket_status = apr_recv(ptrBackend->sock, test_buffer, &buffer_len);
+	    socket_status = apr_socket_recv(ptrBackend->sock, test_buffer, &buffer_len);
 	    /* put back old timeout */
 	    apr_socket_timeout_set(ptrBackend->sock, current_timeout);
 	    if ( APR_STATUS_IS_EOF(socket_status) ) 
@@ -315,7 +315,7 @@ static apr_status_t proxy_fcgi_cleanup(request_rec *r, proxy_fcgi_conn_t *ptrBac
 /*
  * This handles fcgi:// URLs
  */
-static int proxy_fcgi_handler(request_rec *r, proxy_server_conf *ptrProxyConf,
+static int proxy_fcgi_handler(request_rec *r, proxy_worker *ptrPrroxyWorker, proxy_server_conf *ptrProxyConf,
                              char *szUrl, const char *szProxyName,
                              apr_port_t nProxyPort)
 {
