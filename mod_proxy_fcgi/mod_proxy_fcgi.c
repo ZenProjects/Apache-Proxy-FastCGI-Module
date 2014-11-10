@@ -315,7 +315,7 @@ static apr_status_t proxy_fcgi_cleanup(request_rec *r, proxy_fcgi_conn_t *ptrBac
 /*
  * This handles fcgi:// URLs
  */
-static int proxy_fcgi_handler(request_rec *r, proxy_worker *ptrPrroxyWorker, proxy_server_conf *ptrProxyConf,
+static int proxy_fcgi_handler(request_rec *r, proxy_worker *ptrProxyWorker, proxy_server_conf *ptrProxyConf,
                              char *szUrl, const char *szProxyName,
                              apr_port_t nProxyPort)
 {
