@@ -19,4 +19,4 @@ have been inspired from mod_proxy_ajp of Apache 2.2 version in way to achive thi
 
 but have developt it for Apache 2.0 for the moment beceause is the production environment at my work and have no need of load balancing to FastCGI server for the moment, but i port it later to Apache 2.2...
 
-All the documentations are [here](http://mproxyfcgi.sourceforge.net/)
+All the documentations are [here](http://zenprojects.github.io/Apache-Proxy-FastCGI-Module/)
