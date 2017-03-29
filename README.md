@@ -1,5 +1,13 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
+--------
+
+# WARNING
+## _The project are completely experimental_
+## pPrefere to use [mod_proxy_fcgi from apache 2.4](https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html) ...
+
+--------
+
 # What is "mod_proxy_fcgi"?
 
 "mod_proxy_fcgi" is an Apache v2.0 proxy sheme module that implement "fcgi:" scheme to handle reverse proxy protocole FastCGI.
