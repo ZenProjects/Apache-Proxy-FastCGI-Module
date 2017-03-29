@@ -4,7 +4,7 @@
 
 # WARNING
 ## _This project are completely experimental_
-## pPrefere to use [mod_proxy_fcgi from apache 2.4](https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html) ...
+## Prefere to use [mod_proxy_fcgi from apache 2.4](https://httpd.apache.org/docs/2.4/mod/mod_proxy_fcgi.html) ...
 
 --------
 
