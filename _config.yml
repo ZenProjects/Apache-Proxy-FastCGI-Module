@@ -1,4 +1,4 @@
-title: Apache-proxy-fastcgi-module
+title: Proxy Fastcgi Scheme Apache Module
 description: "\"mod_proxy_fcgi\" is an Apache v2.0 proxy sheme module that implement \"fcgi:\" scheme to handle reverse proxy protocole FastCGI."
 google_analytics: UA-3441258-7
 show_downloads: true
